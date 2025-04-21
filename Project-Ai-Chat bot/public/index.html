@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Box Picker</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        .gradient-bg {
+            background: linear-gradient(to right, #4f46e5, #3b82f6);
+        }
+        .chat-appear {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        #chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        #chat-messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        #chat-messages::-webkit-scrollbar-thumb {
+            background: #c7d2fe;
+            border-radius: 10px;
+        }
+        
+        #chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #4f46e5;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="gradient-bg text-white py-4 shadow-lg">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-box-open text-2xl"></i>
+                <h1 class="text-2xl font-bold">SubScribePick</h1>
+            </div>
+            <div class="hidden md:flex space-x-6">
+                <a href="#" class="hover:text-gray-200">Home</a>
+                <a href="#" class="hover:text-gray-200">How It Works</a>
+                <a href="#" class="hover:text-gray-200">About</a>
+                <a href="#" class="hover:text-gray-200">Contact</a>
+            </div>
+            <div class="md:hidden">
+                <button id="menu-toggle" class="text-2xl">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden gradient-bg text-white py-4 px-4 md:hidden">
+        <a href="#" class="block py-2">Home</a>
+        <a href="#" class="block py-2">How It Works</a>
+        <a href="#" class="block py-2">About</a>
+        <a href="#" class="block py-2">Contact</a>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="container mx-auto px-4 py-12">
+        <div class="text-center">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">Find Your Perfect Subscription Box</h2>
+            <p class="text-xl text-gray-600 mb-8">Tell us what you like, and we'll recommend subscription boxes tailored to your interests.</p>
+        </div>
+    </div>
+
+    <!-- Preference Form -->
+    <div class="container mx-auto px-4 mb-16">
+        <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-8">
+            <form id="preferences-form" class="space-y-6">
+                <div>
+                    <label for="interests" class="block text-gray-700 font-medium mb-2">What are you interested in?</label>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <button type="button" class="interest-tag px-4 py-2 rounded-full border border-gray-300 hover:bg-indigo-100 hover:border-indigo-300" data-interest="Beauty & Skincare">Beauty & Skincare</button>
+                        <button type="button" class="interest-tag px-4 py-2 rounded-full border border-gray-300 hover:bg-indigo-100 hover:border-indigo-300" data-interest="Food & Cooking">Food & Cooking</button>
+                        <button type="button" class="interest-tag px-4 py-2 rounded-full border border-gray-300 hover:bg-indigo-100 hover:border-indigo-300" data-interest="Books & Reading">Books & Reading</button>
+                        <button type="button" class="interest-tag px-4 py-2 rounded-full border border-gray-300 hover:bg-indigo-100 hover:border-indigo-300" data-interest="Fitness & Health">Fitness & Health</button>
+                        <button type="button" class="interest-tag px-4 py-2 rounded-full border border-gray-300 hover:bg-indigo-100 hover:border-indigo-300" data-interest="Home Decor">Home Decor</button>
+                        <button type="button" class="interest-tag px-4 py-2 rounded-full border border-gray-300 hover:bg-indigo-100 hover:border-indigo-300" data-interest="Pet Supplies">Pet Supplies</button>
+                        <button type="button" class="interest-tag px-4 py-2 rounded-full border border-gray-300 hover:bg-indigo-100 hover:border-indigo-300" data-interest="Kids & Family">Kids & Family</button>
+                        <button type="button" class="interest-tag px-4 py-2 rounded-full border border-gray-300 hover:bg-indigo-100 hover:border-indigo-300" data-interest="Gaming">Gaming</button>
+                    </div>
+                    <input type="hidden" id="selected-interests" name="interests">
+                    <input type="text" id="custom-interest" class="w-full p-3 border border-gray-300 rounded-md" placeholder="Or type your interests here...">
+                </div>
+                
+                <div>
+                    <label for="budget" class="block text-gray-700 font-medium mb-2">Monthly Budget</label>
+                    <select id="budget" name="budget" class="w-full p-3 border border-gray-300 rounded-md">
+                        <option value="under-25">Under $25</option>
+                        <option value="25-50">$25 - $50</option>
+                        <option value="50-100">$50 - $100</option>
+                        <option value="over-100">Over $100</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="frequency" class="block text-gray-700 font-medium mb-2">Preferred Delivery Frequency</label>
+                    <select id="frequency" name="frequency" class="w-full p-3 border border-gray-300 rounded-md">
+                        <option value="monthly">Monthly</option>
+                        <option value="bi-monthly">Bi-Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-gray-700 font-medium mb-2">Additional Preferences</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" name="preferences" value="eco-friendly" class="mr-2">
+                            <span>Eco-friendly/Sustainable</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="preferences" value="small-business" class="mr-2">
+                            <span>Support small businesses</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="preferences" value="customizable" class="mr-2">
+                            <span>Customizable boxes</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md transition duration-300 flex items-center justify-center">
+                    <span>Find My Perfect Subscription Boxes</span>
+                    <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="results-section" class="container mx-auto px-4 py-8 hidden">
+        <h3 class="text-2xl font-bold text-center mb-8">Your Personalized Subscription Box Recommendations</h3>
+        
+        <div id="loading" class="text-center py-12 hidden">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+            <p class="mt-4 text-gray-600">Finding the perfect subscriptions for you...</p>
+        </div>
+        
+        <div id="results-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Results will be populated here by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between">
+                <div class="mb-6 md:mb-0">
+                    <h3 class="text-xl font-bold mb-4">SubScribePick</h3>
+                    <p class="text-gray-300">Find the perfect subscription boxes tailored to your interests.</p>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Company</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-gray-300 hover:text-white">About Us</a></li>
+                            <li><a href="#" class="text-gray-300 hover:text-white">How It Works</a></li>
+                            <li><a href="#" class="text-gray-300 hover:text-white">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Legal</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-gray-300 hover:text-white">Privacy Policy</a></li>
+                            <li><a href="#" class="text-gray-300 hover:text-white">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-700 text-center">
+                <p>&copy; 2025 SubScribePick. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+
+        // Interest tag selection
+        const interestTags = document.querySelectorAll('.interest-tag');
+        const selectedInterestsInput = document.getElementById('selected-interests');
+        let selectedInterests = [];
+
+        interestTags.forEach(tag => {
+            tag.addEventListener('click', function() {
+                const interest = this.getAttribute('data-interest');
+                
+                if (this.classList.contains('bg-indigo-100')) {
+                    // Remove interest
+                    this.classList.remove('bg-indigo-100', 'border-indigo-300');
+                    selectedInterests = selectedInterests.filter(item => item !== interest);
+                } else {
+                    // Add interest
+                    this.classList.add('bg-indigo-100', 'border-indigo-300');
+                    selectedInterests.push(interest);
+                }
+                
+                selectedInterestsInput.value = selectedInterests.join(', ');
+            });
+        });
+
+        // Form submission
+        document.getElementById('preferences-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(this);
+            const interests = selectedInterests.length > 0 ? 
+                selectedInterests.join(', ') : 
+                document.getElementById('custom-interest').value;
+            
+            const budget = formData.get('budget');
+            const frequency = formData.get('frequency');
+            const additionalPrefs = [...formData.getAll('preferences')];
+            
+            // Show loading
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('results-section').classList.remove('hidden');
+            document.getElementById('results-container').innerHTML = '';
+            
+            // Call API
+            try {
+                const response = await fetch('/api/recommend', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        interests,
+                        budget,
+                        frequency,
+                        additionalPreferences: additionalPrefs
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Error fetching recommendations');
+                }
+                
+                const data = await response.json();
+                
+                // Hide loading
+                document.getElementById('loading').classList.add('hidden');
+                
+                // Display results
+                displayResults(data.recommendations);
+                
+                // Scroll to results
+                document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('results-container').innerHTML = `
+                    <div class="col-span-full text-center py-8">
+                        <i class="fas fa-exclamation-circle text-red-500 text-4xl mb-4"></i>
+                        <p class="text-xl text-gray-700">Sorry, we encountered an error. Please try again later.</p>
+                    </div>
+                `;
+            }
+        });
+
+        // Display results function
+        function displayResults(recommendations) {
+            const container = document.getElementById('results-container');
+            
+            if (!recommendations || recommendations.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-8">
+                        <i class="fas fa-search text-gray-400 text-4xl mb-4"></i>
+                        <p class="text-xl text-gray-700">No recommendations found. Try adjusting your preferences.</p>
+                    </div>
+                `;
+                return;
+            }
+          
+            recommendations.forEach(box => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-lg shadow-md overflow-hidden flex flex-col h-full transition-transform duration-300 hover:scale-105';
+                
+                // Generate image based on category
+                let imageUrl = '';
+                
+                // Map categories to specific image URLs or use category-specific placeholders
+                switch(box.category.toLowerCase()) {
+                    case 'electronics':
+                        imageUrl = '/images/categories/electronics.jpg'; // Your specific path
+                        break;
+                    case 'books':
+                        imageUrl = '/images/categories/books.jpg';
+                        break;
+                    case 'clothing':
+                        imageUrl = '/images/categories/clothing.jpg';
+                        break;
+                    case 'food':
+                        imageUrl = '/images/categories/food.jpg';
+                        break;
+                    case 'fitness':
+                        imageUrl = '/images/categories/fitness.jpg';
+                        break;
+                    default:
+                        // Generate image URL based on name using a keyword-based image service
+                        // or fall back to a more structured placeholder
+                        imageUrl = `https://source.unsplash.com/300x150/?${encodeURIComponent(box.name.split(' ')[0])}`;
+                        
+                        // Fallback if the above doesn't work reliably
+                        const fallbackColor = stringToColor(box.name); // Custom function defined below
+                        imageUrl = `https://placehold.co/300x150/${fallbackColor}/ffffff?text=${encodeURIComponent(box.name.substring(0, 10))}`;
+                }
+                
+                card.innerHTML = `
+                    <div class="h-48 overflow-hidden relative">
+                        <img src="${imageUrl}" 
+                             alt="${box.name}" 
+                             class="w-full h-full object-cover"
+                             onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iJHtmYWxsYmFja0NvbG9yfSIvPjx0ZXh0IHg9IjE1MCIgeT0iNzUiIGZvbnQtc2l6ZT0iMjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGFsaWdubWVudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjZmZmZmZmIj4ke2JveC5uYW1lLnN1YnN0cmluZygwLCAxMCl9PC90ZXh0Pjwvc3ZnPic;">
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2">
+                            <span class="text-white text-xs font-medium px-2 py-1 rounded">${box.category}</span>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-grow">
+                        <h4 class="text-xl font-bold mb-2">${box.name}</h4>
+                        <p class="text-sm text-gray-500 mb-4">${box.category}</p>
+                        <p class="text-gray-700 mb-4">${box.description}</p>
+                        <div class="flex items-center mb-3">
+                            <span class="font-bold mr-2">Price:</span>
+                            <span>${box.price}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="font-bold mr-2">Frequency:</span>
+                            <span>${box.frequency}</span>
+                        </div>
+                    </div>
+                    <div class="p-6 bg-gray-50">
+                        <a href="${box.url || '#'}" target="_blank" class="block w-full py-2 text-center bg-indigo-600 hover:bg-indigo-700 text-white rounded-md">
+                            Learn More
+                        </a>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+            
+            // Helper function to generate a consistent color based on string input
+            function stringToColor(str) {
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) {
+                    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+                }
+                
+                // Convert to hex color (without the # symbol)
+                let color = '';
+                for (let i = 0; i < 3; i++) {
+                    const value = (hash >> (i * 8)) & 0xFF;
+                    color += ('00' + value.toString(16)).substr(-2);
+                }
+                
+                return color;
+            }
+        }
+
+
+
+
+
+        // Add this JavaScript at the end of your existing script tag or in a new script tag before </body>
+
+// Chatbot functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const chatButton = document.getElementById('chat-button');
+    const chatWindow = document.getElementById('chat-window');
+    const closeChat = document.getElementById('close-chat');
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+    const chatMessages = document.getElementById('chat-messages');
+    
+    // Sample responses based on keywords
+    const botResponses = {
+        'hello': 'Hi there! How can I help you find the perfect subscription box?',
+        'hi': 'Hello! Looking for a subscription box recommendation?',
+        'subscription': 'We have many subscription options! Are you interested in a specific category like beauty, food, books, or fitness?',
+        'price': 'Our subscription boxes range from under $25 to over $100 per month. What\'s your budget range?',
+        'how': 'To find your perfect subscription box, simply fill out the preference form above with your interests, budget, and preferred delivery frequency!',
+        'recommendation': 'I\'d be happy to recommend some subscription boxes! Could you tell me what interests you have?',
+        'beauty': 'For beauty lovers, we have boxes featuring skincare, makeup, and self-care products. Would you prefer organic, luxury, or affordable options?',
+        'food': 'Our food subscription boxes include gourmet snacks, meal kits, and international flavors. Do you have any dietary preferences?',
+        'books': 'Book lovers can choose from fiction, non-fiction, genre-specific, or children\'s book subscription boxes. What do you enjoy reading?',
+        'fitness': 'Our fitness boxes include workout gear, supplements, and activewear. Are you looking for beginner-friendly or advanced options?',
+        'help': 'I can help you find the perfect subscription box, answer questions about our service, or guide you through the selection process. What do you need?',
+        'thanks': 'You\'re welcome! Feel free to ask if you have any other questions!',
+        'thank you': 'You\'re welcome! Is there anything else I can help with?'
+    };
+    
+    // Keywords for subscription categories with suggestions
+    const categoryResponses = {
+        'kids': 'For kids boxes, we have educational activities, toys, and books. What age range are you shopping for?',
+        'pet': 'We have great pet subscription boxes with toys, treats, and accessories. Do you have a cat, dog, or other pet?',
+        'gaming': 'Our gaming boxes include collectibles, merchandise, and sometimes games. Are you interested in a specific gaming platform or franchise?',
+        'home': 'Home décor boxes feature seasonal decorations, candles, and stylish accessories. Do you prefer modern, rustic, or eclectic styles?',
+        'eco': 'We have several eco-friendly subscription options that focus on sustainability. Would you like to hear more about them?',
+        'small business': 'Supporting small businesses is great! We have curated boxes featuring products from independent makers and small companies.'
+    };
+    
+    // Toggle chat window
+    chatButton.addEventListener('click', function() {
+        chatWindow.classList.toggle('hidden');
+        chatButton.classList.add('scale-90');
+        setTimeout(() => chatButton.classList.remove('scale-90'), 100);
+        if (!chatWindow.classList.contains('hidden')) {
+            chatInput.focus();
+        }
+    });
+    
+    // Close chat window
+    closeChat.addEventListener('click', function() {
+        chatWindow.classList.add('hidden');
+    });
+    
+    // Handle chat form submission
+    chatForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const message = chatInput.value.trim();
+        if (message === '') return;
+        
+        // Add user message to chat
+        addMessage('user', message);
+        chatInput.value = '';
+        
+        // Process user message and respond
+        setTimeout(() => {
+            const botReply = getBotResponse(message);
+            addMessage('bot', botReply);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 500);
+    });
+    
+    // Add message to chat window
+    function addMessage(sender, message) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'flex items-start';
+        
+        if (sender === 'user') {
+            messageDiv.innerHTML = `
+                <div class="ml-auto bg-indigo-600 text-white rounded-lg py-2 px-3 max-w-[80%]">
+                    <p>${message}</p>
+                </div>
+                <div class="flex-shrink-0 bg-indigo-600 rounded-full p-2 ml-3">
+                    <i class="fas fa-user text-white"></i>
+                </div>
+            `;
+        } else {
+            messageDiv.innerHTML = `
+                <div class="flex-shrink-0 bg-indigo-100 rounded-full p-2">
+                    <i class="fas fa-robot text-indigo-600"></i>
+                </div>
+                <div class="ml-3 bg-gray-100 rounded-lg py-2 px-3 max-w-[80%]">
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+        
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // Get bot response based on user input
+    function getBotResponse(userInput) {
+        const input = userInput.toLowerCase();
+        
+        // Check if input contains form-related questions
+        if (input.includes('form') || input.includes('submit') || input.includes('preference')) {
+            return "To use our recommendation tool, simply fill out the preference form above with your interests, budget, and preferred delivery frequency. Click the 'Find My Perfect Subscription Boxes' button when you're ready!";
+        }
+        
+        // Check if message is a greeting or common phrase
+        for (const keyword in botResponses) {
+            if (input.includes(keyword)) {
+                return botResponses[keyword];
+            }
+        }
+        
+        // Check if message mentions a subscription category
+        for (const category in categoryResponses) {
+            if (input.includes(category)) {
+                return categoryResponses[category];
+            }
+        }
+        
+        // Check for budget-related questions
+        if (input.includes('budget') || input.includes('cost') || input.includes('expensive') || input.includes('cheap')) {
+            return "We have subscription boxes for every budget! You can select your price range from under $25 to over $100 in the preference form. What price range are you considering?";
+        }
+        
+        // Check for frequency-related questions
+        if (input.includes('frequency') || input.includes('delivery') || input.includes('often') || input.includes('monthly')) {
+            return "Most of our subscription boxes come with monthly, bi-monthly, or quarterly delivery options. How often would you like to receive your subscription box?";
+        }
+        
+        // Default response
+        return "Thanks for your message! To get personalized subscription box recommendations, please share your interests or fill out the preference form above. Is there a specific type of subscription box you're looking for?";
+    }
+  });
+  
+
+
+
+
+
+    </script>
+    <!-- Add this HTML at the end of your body tag, just before the closing </body> -->
+<div id="chatbot-container" class="fixed bottom-4 right-4 z-50">
+    <!-- Chat Button -->
+    <button id="chat-button" class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition-all duration-300">
+        <i class="fas fa-comments text-xl"></i>
+    </button>
+    
+    <!-- Chat Window -->
+    <div id="chat-window" class="hidden bg-white rounded-lg shadow-xl w-80 sm:w-96 overflow-hidden flex flex-col transition-all duration-300" style="height: 400px;">
+        <!-- Chat Header -->
+        <div class="gradient-bg text-white p-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fas fa-robot"></i>
+                <h3 class="font-bold">SubScribePick Assistant</h3>
+            </div>
+            <button id="close-chat" class="text-white hover:text-gray-200">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <!-- Chat Messages -->
+        <div id="chat-messages" class="flex-grow p-4 overflow-y-auto space-y-4">
+            <div class="flex items-start">
+                <div class="flex-shrink-0 bg-indigo-100 rounded-full p-2">
+                    <i class="fas fa-robot text-indigo-600"></i>
+                </div>
+                <div class="ml-3 bg-gray-100 rounded-lg py-2 px-3 max-w-[80%]">
+                    <p>Hi there! I'm your subscription box assistant. How can I help you find the perfect subscription box today?</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chat Input -->
+        <div class="border-t p-3">
+            <form id="chat-form" class="flex items-center">
+                <input type="text" id="chat-input" class="flex-grow p-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent" placeholder="Type your message...">
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-r-md">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
